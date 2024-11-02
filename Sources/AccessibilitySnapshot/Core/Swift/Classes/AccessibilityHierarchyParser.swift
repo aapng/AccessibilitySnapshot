@@ -579,11 +579,14 @@ private extension NSObject {
         } else if let accessibilityElements = accessibilityElements as? [NSObject] {
             var accessibilityHierarchyOfElements: [AccessibilityNode] = []
             for element in accessibilityElements {
-                accessibilityHierarchyOfElements.append(
-                    contentsOf: element.recursiveAccessibilityHierarchy(
-                        contextProvider: contextProvider ?? (providesContext ? providedContextAsContainer() : nil)
-                    )
+                let elementHierarchy = element.recursiveAccessibilityHierarchy(
+                    contextProvider: contextProvider ?? (providesContext ? providedContextAsContainer() : nil)
                 )
+                accessibilityHierarchyOfElements.append(.group(
+                    elementHierarchy,
+                    explicitlyOrdered: false,
+                    frameOverrideProvider: (overridesElementFrame(with: contextProvider) ? self : nil)
+                ))
             }
             recursiveAccessibilityHierarchy.append(.group(
                 accessibilityHierarchyOfElements,
